@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import personsService from './services/persons'
+
 const Filter = ({ newFilter, handleFilterChange }) => {
   return (
     <div>
@@ -42,6 +43,27 @@ const Persons = ({ personsToShow, handleDelete }) => {
 
 }
 
+const Notification = ({ message, color }) => {
+  if (message === null) {
+    return <></>
+  }
+  console.log(color)
+  const notificationStyle = {
+    color: color,
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+  return (
+    <div style={notificationStyle}>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
 
   const [persons, setPersons] = useState([])
@@ -49,6 +71,9 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
   const [showAll, setShowAll] = useState(true)
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [notificationColor, setNotificationColor] = useState('green')
+
   useEffect(() => {
     personsService
       .getAll()
@@ -57,17 +82,34 @@ const App = () => {
       })
   }, [])
 
+  const handleNotification = (message, color) => {
+    setNotificationColor(color)
+    setNotificationMessage(message)
+    console.log(notificationColor)
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 5000)
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
     if (persons.some(person => person.name === newName)) {
       if (window.confirm(`${newName} is already added to phonebook! Do you want to update the number?`)) {
         const person = persons.find(person => person.name === newName)
         const changedPerson = { ...person, number: newNumber }
+
         personsService
           .update(person.id, changedPerson)
           .then(returnedPerson => {
-            setPersons(persons.map(person => person.id !== changedPerson.id ? person : returnedPerson))
+            setPersons(persons.map(p => p.id !== changedPerson.id ? p : returnedPerson))
           })
+          .catch(error => {
+            handleNotification(`Information of ${newName} was already deleted from the server`, 'red')
+            setPersons(persons.filter(p => p.id !== person.id))
+          })
+        handleNotification(`Updated ${newName}`, 'green')
+
+
       }
     } else {
       const personObject = { name: newName, number: newNumber, id: persons.length + 1 }
@@ -76,6 +118,7 @@ const App = () => {
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
         })
+      handleNotification(`Added ${newName}`, 'green')
     }
     setNewName('')
     setNewNumber('')
@@ -105,6 +148,10 @@ const App = () => {
       personsService
         .deletePerson(person_id)
         .then(returnedStatus => console.log(returnedStatus))
+        .catch(error => {
+          handleNotification(`Information of ${person_name} was already deleted from the server`, 'red')
+          setPersons(persons.filter(p => p.id !== person_id))
+        })
       setPersons(persons.filter(p => p.id !== person_id))
     }
   }
@@ -114,7 +161,11 @@ const App = () => {
 
   return (
     <div>
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
+      <Notification
+        message={notificationMessage}
+        color={notificationColor}
+      />
       <Filter
         newFilter={newFilter}
         handleFilterChange={handleFilterChange}
