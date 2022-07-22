@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs 
+Content-Type: application/json
+
+{
+    "title": "velikullan väitökset", 
+    "author": "velikulta", 
+    "url": "google.com",
+    "number": 4
+}
