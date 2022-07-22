@@ -47,7 +47,6 @@ const Notification = ({ message, color }) => {
   if (message === null) {
     return <></>
   }
-  console.log(color)
   const notificationStyle = {
     color: color,
     background: 'lightgrey',
@@ -85,7 +84,6 @@ const App = () => {
   const handleNotification = (message, color) => {
     setNotificationColor(color)
     setNotificationMessage(message)
-    console.log(notificationColor)
     setTimeout(() => {
       setNotificationMessage(null)
     }, 5000)
@@ -101,11 +99,15 @@ const App = () => {
         personsService
           .update(person.id, changedPerson)
           .then(returnedPerson => {
-            setPersons(persons.map(p => p.id !== changedPerson.id ? p : returnedPerson))
+            if (!returnedPerson) {
+              handleNotification(`Information of ${newName} was already deleted from the server`, 'red')
+              setPersons(persons.filter(p => p.id !== person.id))
+            } else {
+              setPersons(persons.map(p => p.id !== changedPerson.id ? p : returnedPerson))
+            }
           })
           .catch(error => {
-            handleNotification(`Information of ${newName} was already deleted from the server`, 'red')
-            setPersons(persons.filter(p => p.id !== person.id))
+            handleNotification(error.response.data.error, 'red')
           })
         handleNotification(`Updated ${newName}`, 'green')
 
@@ -118,6 +120,7 @@ const App = () => {
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
         })
+        .catch(error => handleNotification(error.response.data.error, 'red'))
       handleNotification(`Added ${newName}`, 'green')
     }
     setNewName('')
@@ -142,7 +145,7 @@ const App = () => {
   }
 
   const handleDelete = (event) => {
-    const person_id = parseInt(event.target.getAttribute('data-id'))
+    const person_id = event.target.getAttribute('data-id')
     const person_name = event.target.getAttribute('data-name')
     if (window.confirm(`Do you want to delete ${person_name}?`)) {
       personsService
