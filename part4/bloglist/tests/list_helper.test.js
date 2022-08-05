@@ -60,3 +60,56 @@ describe('favorite blog', () => {
         expect(result).toBe(undefined)
     })
 })
+
+describe('most blogs', () => {
+    test('is returned when there is one blog', () => {
+        const result = listHelper.mostBlogs(listHelper.listWithOneBlog)
+        const expected = {
+            author: 'Edsger W. Dijkstra',
+            blogs: 1
+        }
+        expect(result).toEqual(expected)
+    })
+
+    test('is returned when there are several blogs', () => {
+        const result = listHelper.mostBlogs(listHelper.blogs)
+        const expected = {
+            author: 'Robert C. Martin',
+            blogs: 3
+        }
+        expect(result).toEqual(expected)
+    })
+
+    test('is returned when there are no blogs', () => {
+        const result = listHelper.mostBlogs([])
+
+        expect(result).toBe(null)
+    })
+})
+
+describe('most likes', () => {
+    test('is returned when there is one blog', () => {
+        const result = listHelper.mostLikes(listHelper.listWithOneBlog)
+        const expected = {
+            author: 'Edsger W. Dijkstra',
+            likes: 5
+        }
+        expect(result).toEqual(expected)
+    })
+
+    test('is returned when there are several blogs', () => {
+        const result = listHelper.mostLikes(listHelper.blogs)
+        console.log(result)
+        const expected = {
+            author: 'Edsger W. Dijkstra',
+            likes: 17
+        }
+        expect(result).toEqual(expected)
+    })
+
+    test('is returned when there are no blogs', () => {
+        const result = listHelper.mostLikes([])
+
+        expect(result).toBe(null)
+    })
+})

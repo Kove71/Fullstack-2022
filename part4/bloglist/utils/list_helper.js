@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 const listWithOneBlog = [
     {
         _id: '5a422aa71b54a676234d17f8',
@@ -74,10 +76,40 @@ const favoriteBlog = (blogs) => {
     return blogs.filter(b => b.likes === max_likes)[0]
 }
 
+const mostBlogs = (blogs) => {
+    if (blogs.length < 1) {
+        return null
+    }
+    const authors = blogs.map(b => b.author)
+    const authorList = _.values(_.groupBy(authors))
+    const author = authorList[authorList.length - 1]
+    return { author: author[0], blogs: author.length }
+}
+
+const mostLikes = (blogs) => {
+    if (blogs.length < 1) {
+        return null
+    }
+
+    const authorList =
+        _(blogs)
+            .groupBy('author')
+            .map((objs, key) => ({
+                'author': key,
+                'likes': _.sumBy(objs, 'likes')
+            }))
+            .sortBy(blogs, ['likes'])
+            .value()
+
+    return authorList[authorList.length - 1]
+}
+
 module.exports = {
     dummy,
     totalLikes,
     listWithOneBlog,
     blogs,
-    favoriteBlog
+    favoriteBlog,
+    mostBlogs,
+    mostLikes
 }
