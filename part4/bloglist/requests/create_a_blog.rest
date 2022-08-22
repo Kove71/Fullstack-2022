@@ -1,9 +1,10 @@
 POST http://localhost:3003/api/blogs 
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJhYmFiYWJhIiwiaWQiOiI2MmZmN2I4MmQ5MzBmMzA2ODBkMjE5YTkiLCJpYXQiOjE2NjExNzY3NjZ9.tNtXrWfmoW9NjJNS4jJWrNtSS495HSGij1WAZFGYGKc
 
 {
     "title": "velikullan väitökset", 
     "author": "velikulta", 
     "url": "google.com",
-    "number": 4
+    "likes": 4
 }

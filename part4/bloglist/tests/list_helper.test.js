@@ -99,7 +99,6 @@ describe('most likes', () => {
 
     test('is returned when there are several blogs', () => {
         const result = listHelper.mostLikes(listHelper.blogs)
-        console.log(result)
         const expected = {
             author: 'Edsger W. Dijkstra',
             likes: 17
