@@ -13,6 +13,8 @@ router.get('/', async (request, response) => {
 })
 
 router.post('/', async (request, response) => {
+    request.body.likes = request.body.likes || 0
+
     if (!request.user) {
         return response.status(401).json({ error: 'token missing or invalid' })
     }
@@ -47,7 +49,6 @@ router.delete('/:id', async (request, response) => {
 
 router.put('/:id', async (request, response) => {
     const blog = request.body
-
     const updatedBlog = await Blog
         .findByIdAndUpdate(
             request.params.id,

@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import Login from './components/Login'
 import loginService from './services/login'
 import CreateBlog from './components/CreateBlog'
 import Message from './components/Message'
+import Togglable from './components/Togglable'
 
 
 const App = () => {
@@ -28,6 +29,8 @@ const App = () => {
         }
     }, [])
 
+    const createBlogRef = useRef()
+
     const handleMessage = (message, color) => {
         setMessageColor(color)
         setMessage(message)
@@ -44,13 +47,51 @@ const App = () => {
 
     const handleCreateBlog = async (event, blog) => {
         try {
+            createBlogRef.current.toggleVisibility()
             const returnedBlog = await blogService.postBlog(blog)
             setBlogs(blogs.concat(returnedBlog))
             handleMessage(`${blog.title} added`, 'green')
         } catch (exception) {
-            handleMessage('posting message did not work', 'red')
+            handleMessage('creating blog did not work', 'red')
         }
 
+    }
+
+    const handleLike = async (event, blog) => {
+        event.preventDefault()
+        try {
+            const newBlog = {
+                ...blog,
+                likes: blog.likes + 1,
+                user: blog.user.id
+            }
+            await blogService.putBlog(newBlog)
+            newBlog.user = {
+                username: blog.user.username,
+                name: blog.user.name
+            }
+            const updatedBlogs = blogs
+                .map(b => b.id !== blog.id ? b : newBlog)
+                .sort((a, b) => b.likes - a.likes)
+
+            setBlogs(updatedBlogs)
+
+        } catch (exception) {
+            handleMessage('updating blog did not work', 'red')
+        }
+    }
+
+    const handleDelete = async (event, blog) => {
+        event.preventDefault()
+        if (window.confirm(`Do you want to remove ${blog.title}?`)) {
+            try {
+                await blogService.deleteBlog(blog)
+                const updatedBlogs = blogs.filter(b => b.id !== blog.id)
+                setBlogs(updatedBlogs)
+            } catch (exception) {
+                handleMessage('removing blog did not work', 'red')
+            }
+        }
     }
 
     if (!user) {
@@ -60,13 +101,17 @@ const App = () => {
                     message={message}
                     color={messageColor}
                 />
-                <Login
-                    user={user}
-                    setUser={setUser}
-                    setMessage={setMessage}
-                    loginService={loginService}
-                    handleMessage={handleMessage}
-                />
+                <Togglable
+                    buttonLabel="login"
+                >
+                    <Login
+                        user={user}
+                        setUser={setUser}
+                        setMessage={setMessage}
+                        loginService={loginService}
+                        handleMessage={handleMessage}
+                    />
+                </Togglable>
             </div>
         )
     }
@@ -82,17 +127,28 @@ const App = () => {
                     type='button'
                     onClick={handleLogout}>log out</button>
             </p>
-            <CreateBlog
-                user={user}
-                blogService={blogService}
-                setMessage={setMessage}
-                setBlogs={setBlogs}
-                blogs={blogs}
-                handleCreateBlog={handleCreateBlog}
-                handleMessage={handleMessage}
-            />
+            <Togglable
+                buttonLabel='new blog'
+                ref={createBlogRef}
+            >
+                <CreateBlog
+                    user={user}
+                    blogService={blogService}
+                    setMessage={setMessage}
+                    setBlogs={setBlogs}
+                    blogs={blogs}
+                    handleCreateBlog={handleCreateBlog}
+                    handleMessage={handleMessage}
+                />
+            </Togglable>
+
             {blogs.map(blog =>
-                <Blog key={blog.id} blog={blog} />
+                <Blog
+                    key={blog.id}
+                    blog={blog}
+                    handleLike={handleLike}
+                    handleDelete={handleDelete}
+                />
             )}
 
         </div>

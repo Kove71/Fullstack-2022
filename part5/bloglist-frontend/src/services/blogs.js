@@ -15,10 +15,21 @@ const postBlog = async (blog) => {
     return response.data
 }
 
+const putBlog = async (blog) => {
+    const response = await axios.put(`${baseUrl}/${blog.id}`, blog, { headers: { Authorization: token } })
+    return response.data
+}
+
+const deleteBlog = async (blog) => {
+    const response = await axios.delete(`${baseUrl}/${blog.id}`, { headers: { Authorization: token } })
+    return response.data
+}
 const exported = {
     getAll,
     postBlog,
-    setToken
+    setToken,
+    putBlog,
+    deleteBlog
 }
 
 export default exported
