@@ -2,38 +2,48 @@
   "anecdotes": [
     {
       "content": "velikulta",
-      "votes": 8,
+      "votes": 20,
       "id": 123456
     },
     {
       "content": "virveli viivanenä",
-      "votes": 872,
+      "votes": 876,
       "id": 234567
     },
     {
       "content": "jehmakeitto",
-      "votes": 5,
+      "votes": 18,
       "id": 234568
     },
     {
       "content": "kamiinan kummitus",
-      "votes": 13,
+      "votes": 17,
       "id": 234569
     },
     {
       "content": "svengijengi",
-      "votes": 6,
+      "votes": 12,
       "id": 234570
     },
     {
       "content": "villakoira",
-      "votes": 3,
+      "votes": 14,
       "id": 234571
     },
     {
       "content": "karvapetteri",
-      "votes": 1,
+      "votes": 4,
       "id": 234572
+    },
+    {
+      "content": "jepulismies",
+      "votes": 5,
+      "id": 234573
+    },
+    {
+      "content": "hurjamursu",
+      "votes": 10,
+      "id": 234574
     }
   ]
 }
